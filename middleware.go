@@ -23,7 +23,7 @@ func (sr *statusRecorder) Status() int {
 }
 
 func getClientIP(r *http.Request) string {
-	clientIP := r.Header.Get("Fly-Client-Ip")
+	clientIP := r.Header.Get("Fly-Client-IP")
 	if clientIP == "" {
 		var err error
 		clientIP, _, err = net.SplitHostPort(r.RemoteAddr)
@@ -36,9 +36,10 @@ func getClientIP(r *http.Request) string {
 
 func logHit(r *http.Request, status int) {
 	proto := r.Header.Get("X-Forwarded-Proto")
+	xff := r.Header.Get("X-Forwarded-For")
 	httpReqs.WithLabelValues(proto, r.Host).Inc()
-	log.Printf("client=\"%s\" proto=\"%s\" host=\"%s\" method=\"%s\" url=\"%s\" code=\"%d\" referrer=\"%s\" ua=\"%s\"",
-		getClientIP(r), proto, r.Host, r.Method, r.URL.String(), status, r.Referer(), r.UserAgent())
+	log.Printf("client=\"%s\" proto=\"%s\" host=\"%s\" method=\"%s\" url=\"%s\" code=\"%d\" referrer=\"%s\" ua=\"%s\" xff=\"%s\"",
+		getClientIP(r), proto, r.Host, r.Method, r.URL.String(), status, r.Referer(), r.UserAgent(), xff)
 }
 
 func filter(h http.Handler) http.Handler {

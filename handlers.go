@@ -3,6 +3,7 @@ package main
 import (
 	"io"
 	"net/http"
+	"text/template"
 )
 
 func indexHandler(w http.ResponseWriter, r *http.Request) {
@@ -11,9 +12,16 @@ func indexHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	uuid, err := GenerateUUIDv7()
+	if err != nil {
+		uuid = "Nothing to see here."
+	}
+
 	w.Header().Set("Content-Type", "text/html; charset=UTF-8")
 	w.WriteHeader(http.StatusOK)
-	io.WriteString(w, indexHTML)
+
+	t := template.Must(template.New("index").Parse(indexHTML))
+	t.Execute(w, uuid)
 }
 
 func styleHandler(w http.ResponseWriter, r *http.Request) {
