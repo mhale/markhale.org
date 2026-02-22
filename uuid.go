@@ -31,7 +31,7 @@ const (
 
 // GenerateUUIDv7 generates a version 7 UUID according to RFC 4122
 // V7 UUIDs are time-ordered and contain a 48-bit timestamp followed by random data
-func GenerateUUIDv7() (string, error) {
+func GenerateUUIDv7() string {
 	// Get current Unix timestamp in milliseconds
 	timestamp := time.Now().UnixMilli()
 
@@ -61,5 +61,5 @@ func GenerateUUIDv7() (string, error) {
 		uuid[4:6],
 		uuid[6:8],
 		uuid[8:10],
-		uuid[10:16]), nil
+		uuid[10:16])
 }
