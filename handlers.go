@@ -39,3 +39,9 @@ func mtaSTSHandler(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 	io.WriteString(w, mtaSTSPolicy)
 }
+
+func cvHandler(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "text/html; charset=UTF-8")
+	w.WriteHeader(http.StatusOK)
+	io.WriteString(w, cvHTML)
+}
