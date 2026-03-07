@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"os"
 	"os/signal"
+	"syscall"
 	"time"
 
 	"github.com/prometheus/client_golang/prometheus"
@@ -84,11 +85,11 @@ func main() {
 
 	// Graceful shutdown handler.
 	go func() {
-		sigint := make(chan os.Signal, 1)
-		signal.Notify(sigint, os.Interrupt)
-		<-sigint
+		sigChan := make(chan os.Signal, 1)
+		signal.Notify(sigChan, syscall.SIGINT, syscall.SIGTERM)
+		sig := <-sigChan
 
-		log.Println("Received SIGINT")
+		log.Printf("Performing graceful shutdown after receiving signal %d (%s)\n", sig, sig)
 		if err := srv.Shutdown(context.Background()); err != nil {
 			log.Printf("Shutdown error: %v", err)
 		}
