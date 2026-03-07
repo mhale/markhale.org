@@ -31,6 +31,9 @@ var mtaSTSPolicy string
 //go:embed cv.html
 var cvHTML string
 
+//go:embed favicon.svg
+var faviconSVG string
+
 var httpReqs = promauto.NewCounterVec(prometheus.CounterOpts{
 	Name: "http_requests_total",
 	Help: "HTTP requests processed, partitioned by protocol and hostname.",
@@ -65,6 +68,7 @@ func main() {
 	mux.HandleFunc("/style.css", styleHandler)
 	mux.HandleFunc("/.well-known/mta-sts.txt", mtaSTSHandler)
 	mux.HandleFunc("/cv", cvHandler)
+	mux.HandleFunc("/favicon.svg", faviconHandler)
 
 	// Configure middleware.
 	var handler http.Handler = mux

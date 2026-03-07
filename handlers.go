@@ -45,3 +45,9 @@ func cvHandler(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 	io.WriteString(w, cvHTML)
 }
+
+func faviconHandler(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "image/svg+xml")
+	w.WriteHeader(http.StatusOK)
+	io.WriteString(w, faviconSVG)
+}
