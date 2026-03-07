@@ -2,6 +2,7 @@ package main
 
 import (
 	"crypto/rand"
+	"encoding/binary"
 	"fmt"
 	"time"
 )
@@ -20,31 +21,23 @@ const (
 	VersionV7      = 0x70
 	VariantMask    = 0x3f
 	VariantRFC4122 = 0x80
-
-	// Bit shift constants for timestamp
-	TimestampShift40 = 40
-	TimestampShift32 = 32
-	TimestampShift24 = 24
-	TimestampShift16 = 16
-	TimestampShift8  = 8
 )
 
 // GenerateUUIDv7 generates a version 7 UUID according to RFC 4122
-// V7 UUIDs are time-ordered and contain a 48-bit timestamp followed by random data
+// V7 UUIDs contain a 48-bit timestamp followed by 80 bits of random data
 func GenerateUUIDv7() string {
-	// Get current Unix timestamp in milliseconds
+	var uuid [UUIDSize]byte
+	var tsBytes [8]byte
+
 	timestamp := time.Now().UnixMilli()
 
-	// Create UUID byte array
-	var uuid [UUIDSize]byte
-
 	// Set timestamp (48 bits = 6 bytes) in big-endian format
-	uuid[0] = byte(timestamp >> TimestampShift40)
-	uuid[1] = byte(timestamp >> TimestampShift32)
-	uuid[2] = byte(timestamp >> TimestampShift24)
-	uuid[3] = byte(timestamp >> TimestampShift16)
-	uuid[4] = byte(timestamp >> TimestampShift8)
-	uuid[5] = byte(timestamp)
+	// timestamp = 1772295802342 will look like this in binary:
+	// 00000000 00000000 00000001 10011100 10100101 00001111 11001101 11100110
+	binary.BigEndian.PutUint64(tsBytes[:], uint64(timestamp))
+
+	// Copy last 6 bytes (48 bits) from the 64-bit big-endian buffer
+	copy(uuid[0:TimestampBytes], tsBytes[8-TimestampBytes:])
 
 	// Fill remaining bytes with random data
 	rand.Read(uuid[RandomBytesStart:])
