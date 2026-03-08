@@ -61,6 +61,13 @@ func filter(h http.Handler) http.Handler {
 			return
 		}
 
+		// mta-sts subdomain only serves /.well-known/mta-sts.txt
+		if strings.HasPrefix(r.Host, "mta-sts.") && r.URL.Path != "/.well-known/mta-sts.txt" {
+			http.Error(w, "Page not found", http.StatusNotFound)
+			logHit(r, http.StatusNotFound)
+			return
+		}
+
 		h.ServeHTTP(w, r)
 	})
 }
