@@ -56,6 +56,7 @@ func filter(h http.Handler) http.Handler {
 		// Only allow GET and HEAD requests because this is a read-only site.
 		validMethod := r.Method == http.MethodGet || r.Method == http.MethodHead
 		if !validMethod {
+			w.Header().Set("Allow", "GET, HEAD")
 			http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
 			logHit(r, http.StatusMethodNotAllowed)
 			return
