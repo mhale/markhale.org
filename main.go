@@ -43,8 +43,8 @@ func main() {
 	// Tweak the logs if deployed.
 	_, onFly := os.LookupEnv("FLY_APP_NAME")
 	if onFly {
-		log.SetFlags(0)    // Remove duplicated timestamp
-		log.SetPrefix(" ") // Differentiate between site and Docker entries
+		log.SetFlags(0)    // Remove duplicated timestamp.
+		log.SetPrefix(" ") // Differentiate between site and Docker entries.
 	}
 
 	log.Println("Starting")
