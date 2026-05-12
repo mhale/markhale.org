@@ -12,6 +12,14 @@ func indexHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	validMethod := r.Method == http.MethodGet || r.Method == http.MethodHead
+	if !validMethod {
+		w.Header().Set("Allow", "GET, HEAD")
+		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+		logHit(r, http.StatusMethodNotAllowed)
+		return
+	}
+
 	w.Header().Set("Content-Type", "text/html; charset=UTF-8")
 	w.WriteHeader(http.StatusOK)
 
