@@ -35,6 +35,11 @@ func getClientIP(r *http.Request) string {
 }
 
 func logHit(r *http.Request, status int) {
+	// Don't log 404s for non-markhale.org hosts to avoid bot scanning noise.
+	if status == http.StatusNotFound && !strings.Contains(r.Referer(), "markhale") {
+		return
+	}
+
 	proto := r.Header.Get("X-Forwarded-Proto")
 	xff := r.Header.Get("X-Forwarded-For")
 	httpReqs.WithLabelValues(proto, r.Host).Inc()
