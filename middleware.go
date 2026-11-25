@@ -5,6 +5,7 @@ import (
 	"net"
 	"net/http"
 	"net/url"
+	"strconv"
 	"strings"
 )
 
@@ -43,8 +44,10 @@ func logHit(r *http.Request, status int) {
 	proto := r.Header.Get("X-Forwarded-Proto")
 	xff := r.Header.Get("X-Forwarded-For")
 	httpReqs.WithLabelValues(proto, r.Host).Inc()
-	log.Printf("client=\"%s\" proto=\"%s\" host=\"%s\" method=\"%s\" url=\"%s\" code=\"%d\" referrer=\"%s\" ua=\"%s\" xff=\"%s\"",
-		getClientIP(r), proto, r.Host, r.Method, r.URL.String(), status, r.Referer(), r.UserAgent(), xff)
+	log.Printf("client=%s proto=%s host=%s method=%s url=%s code=%d referrer=%s ua=%s xff=%s",
+		strconv.Quote(getClientIP(r)), strconv.Quote(proto), strconv.Quote(r.Host),
+		strconv.Quote(r.Method), strconv.Quote(r.URL.String()), status,
+		strconv.Quote(r.Referer()), strconv.Quote(r.UserAgent()), strconv.Quote(xff))
 }
 
 func filter(h http.Handler) http.Handler {

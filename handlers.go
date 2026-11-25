@@ -2,6 +2,7 @@ package main
 
 import (
 	"io"
+	"log"
 	"net/http"
 	"text/template"
 )
@@ -25,13 +26,15 @@ func indexHandler(w http.ResponseWriter, r *http.Request) {
 
 	uuid := GenerateUUIDv7()
 	t := template.Must(template.New("index").Parse(indexHTML))
-	t.Execute(w, uuid)
+	if err := t.Execute(w, uuid); err != nil {
+		log.Printf("render index: %v", err)
+	}
 }
 
 func styleHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "text/css; charset=UTF-8")
 	w.WriteHeader(http.StatusOK)
-	io.WriteString(w, styleCSS)
+	writeResponse(w, styleCSS)
 }
 
 // For mta-sts.txt format and values, see:
@@ -45,17 +48,23 @@ func mtaSTSHandler(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "text/plain; charset=UTF-8")
 	w.WriteHeader(http.StatusOK)
-	io.WriteString(w, mtaSTSPolicy)
+	writeResponse(w, mtaSTSPolicy)
 }
 
 func cvHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "text/html; charset=UTF-8")
 	w.WriteHeader(http.StatusOK)
-	io.WriteString(w, cvHTML)
+	writeResponse(w, cvHTML)
 }
 
 func faviconHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "image/svg+xml")
 	w.WriteHeader(http.StatusOK)
-	io.WriteString(w, faviconSVG)
+	writeResponse(w, faviconSVG)
+}
+
+func writeResponse(w http.ResponseWriter, content string) {
+	if _, err := io.WriteString(w, content); err != nil {
+		log.Printf("write response: %v", err)
+	}
 }
